@@ -4,7 +4,7 @@ This might help you get started with embedding CPython in your web app (assuming
 
 ### Credit
 
-See [DGYM](https://github.com/dgym/cpython-emscripten). The instructions here are simply some of what he does with make.
+See [DGYM](https://github.com/dgym/cpython-emscripten). The instructions here are some of what he does with make.
 
 ### Here are the steps -
 
@@ -16,19 +16,19 @@ See [DGYM](https://github.com/dgym/cpython-emscripten). The instructions here ar
 
 - Configure, Build and Install CPython with Emscripten.
 
-- Verify with a small test app.
+- Verify with a small app.
 
-### A few notes
+### Backgroud, A few notes
 
 I have been using Ubuntu for the Python side of my web app development. To verify what I am describing here I used a new virtual machine running Ubuntu 19.04 (Disco Dingo) which I think is a fairly recent release. What is presented here I am pretty sure will work on at least the previous release (which I contine to use otherwise in other VMs). Actually this will work on any Linux, right? You just might have to mess with things.
 
 I cloned and compiled CPython 3.7. Others might work.
 
-I don't what to pretend I know as much as I should about everything that happens here. I just want to embed CPython in my web app. Linux is not my first/preferred operating/development environment. String me up. But since starting on this stuff about 8 months ago I have learned some. I have a feeling for what the patches do, for example, and I know a little more about bash. I certainly appreciate Linux and open source. Especially CPython. Emscripten and CPython (and everything, it seems) are large and complicated. By far I spend the majority of my time (when in Linux) developing my stuff that is the interface between CPython and my web app - so I have learned much more about CPython then, say, Emscripten. 
+I don't what to pretend I know as much as I should about everything that happens here. I just want to embed CPython in my web app. Linux is not my first/preferred operating/development environment. String me up. But since starting on this stuff about 8 months ago I have learned some. I have a feeling for what the patches do, for example, and I know a little more about bash. I certainly appreciate Linux and open source. Especially CPython. Emscripten and CPython (and everything, it seems) are large and complicated. By far I spend the majority of my time (when in Linux) learning CPython and developing my stuff that is the interface between CPython and my web app - so I have learned much more about CPython then, say, Emscripten. 
 
 The OS (Ubuntu 19.04) in my VM came with Python 3.7 installed. That Python is used in several places below.
 
-Emscripten mentions in various places in its docs that it might work with Python 3. My experience is that it does not. I installed Python 2. And I think I had to create a python symlink to python2.7 (in /usr/bin).
+Emscripten mentions in various places in its docs that it might work with Python 3. My experience is that it does not. I installed Python 2. And I think I had to create a python symlink to python2.7 (in /usr/bin). Furthermore the Makefile of the exmple app uses Python 2.
 
 
 ### Clone this repository
@@ -39,7 +39,7 @@ Somewhere under your home directory do
 ```
 Which will create a subdirectory named emscripten-cpython and put this repository there.
 
-To specify a different directory specify the directory name at the end. For example
+To install in a different directory specify the directory name at the end. For example
 ```
     $ git clone https://github.com/BradDunagan/emscript-cpython.git my-browserified-cpython
 ```
@@ -61,7 +61,7 @@ In the working-directory -
 
 CPython's source will now be in subdirectory cpython.
 
-You will need pgen, Python's parser generator. So here we configure as we are going to build a native CPython. But we only build pgen, copy it the working-directory and remove all files so to have a fresh cpython source again.
+You will need **pgen**, Python's parser generator. So here we configure as if we are going to build a native CPython. But we only build pgen, copy it to the working-directory and remove all affected files so we have a fresh CPython source again.
 
 ```
     $ cd cpython
@@ -109,7 +109,7 @@ I am not sure that supplying the zlib source files is necessary here. But here y
     cp zlib/* cpython/Modules/zlib
 ```
 
-Ready to compile CPython. Note that what is created is a library file. Later it is linked with your application code in another Emscripten step that produces the JavaScript and WebAssembly that is executed by the browser (or a modern NodeJS).
+Ready to compile CPython. Note that what is created is a library file. Later it is linked with your application code in another Emscripten step that produces the JavaScript and WebAssembly that is executed by the browser.
 
 Notice here HOSTPYTHON. [DGYM](https://github.com/dgym/cpython-emscripten) builds a separate (native) CPython for this. I simply specify what is installed in my system. It seems to work.
 
@@ -145,13 +145,13 @@ Copy the libpython3.7.a file too.
     $ cp libpython3.7.a <install-path>/lib
 ```
 
-If your app will use the sysconfig.py module then this ugly -
+The example app uses the sysconfig.py module. For that we need this ugly -
 
 ```
-    $ (_PYTHON_PROJECT_BASE=<working-directory>/cpython _PYTHON_HOST_PLATFORM=emscripten PYTHONHOME=<install-path> PYTHONPATH=<working-directory>/Lib _PYTHON_SYSCONFIGDATA_NAME=_sysconfigdata__emscripten_ python3.7 -S -m sysconfig --generate-posix-vars)
+    $ (_PYTHON_PROJECT_BASE=<working-directory>/cpython _PYTHON_HOST_PLATFORM=emscripten PYTHONHOME=<install-path> PYTHONPATH=<working-directory>/cpython/Lib _PYTHON_SYSCONFIGDATA_NAME=_sysconfigdata__emscripten_ python3.7 -S -m sysconfig --generate-posix-vars)
 ```
 
-From looking at the Makefile it appears this is not done automatically because the install command (above) specifies  inclinstall libinstall (instead of just install).  It may also be that shared modules are not built.
+From looking at the Makefile it appears this is not done automatically because the install command (above) specifies  inclinstall libinstall (instead of just install).  Another reason may also be that shared modules are not built.
 
 The result is put in the build/lib.emscripten-3.7/ directory. Copy it to the installation -
 
@@ -159,9 +159,11 @@ The result is put in the build/lib.emscripten-3.7/ directory. Copy it to the ins
     $ cp build/lib.emscripten-3.7/_sysconfigdata__emscripten_.py <install-path>/lib/python3.7/
 ```
 
-### Verify with a small test app
+### Verify with a small app
 
-In directory <>/examples/01-print.
+In directory <working-directory>/examples/01-print.
+
+If you look at main.c you will see that it calls a CPython API function to execute a small Python script that prints out system configuration info. Note that from the app's perspective the system is emscripten.
 
 Submit a make command specifying the absolute path to your CPython install directory -
 
