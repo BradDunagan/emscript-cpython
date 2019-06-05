@@ -161,7 +161,20 @@ The result is put in the build/lib.emscripten-3.7/ directory. Copy it to the ins
 
 ### Verify with a small test app
 
+In directory <>/examples/01-print.
 
+Submit a make command specifying the absolute path to your CPython install directory -
 
+```
+    $ make CPYTHON=<install-path>
+```
 
+You should now have some python.asm.* files.
 
+Run a website server -
+
+```
+    $ make serve
+```
+
+In your browser, goto http://localhost:8062/. Open the debug tools. Look at the console.
