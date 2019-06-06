@@ -145,13 +145,13 @@ Copy the libpython3.7.a file too.
     $ cp libpython3.7.a <install-path>/lib
 ```
 
-The example app uses the sysconfig.py module. For that we need this ugly -
+The example app uses the sysconfig.py module. For that we need this ugly - note that there are two places you must specify your working-directory and one place the install-path -
 
 ```
     $ (_PYTHON_PROJECT_BASE=<working-directory>/cpython _PYTHON_HOST_PLATFORM=emscripten PYTHONHOME=<install-path> PYTHONPATH=<working-directory>/cpython/Lib _PYTHON_SYSCONFIGDATA_NAME=_sysconfigdata__emscripten_ python3.7 -S -m sysconfig --generate-posix-vars)
 ```
 
-From looking at the Makefile it appears this is not done automatically because the install command (above) specifies  inclinstall libinstall (instead of just install).  Another reason may also be that shared modules are not built.
+(From looking at the Makefile it appears this is not done automatically because the install command (above) specifies  inclinstall libinstall (instead of just install).  Another reason may also be that shared modules are not built.)
 
 The result is put in the build/lib.emscripten-3.7/ directory. Copy it to the installation -
 
@@ -161,15 +161,17 @@ The result is put in the build/lib.emscripten-3.7/ directory. Copy it to the ins
 
 ### Verify with a small app
 
-In directory <working-directory>/examples/01-print.
+In directory \<working-directory\>/examples/01-print.
 
 If you look at main.c you will see that it calls a CPython API function to execute a small Python script that prints out system configuration info. Note that from the app's perspective the system is emscripten.
 
-Submit a make command specifying the absolute path to your CPython install directory -
+Submit a make command specifying the absolute path (without a slash on the end) to your CPython install directory -
 
 ```
     $ make CPYTHON=<install-path>
 ```
+
+The first time you run make here it will take a while because Emscripten is building libc (for the browser) and other things that are cached.
 
 You should now have some python.asm.* files.
 
@@ -180,3 +182,5 @@ Run a website server -
 ```
 
 In your browser, goto http://localhost:8062/. Open the debug tools. Look at the console.
+
+This example app is based on [DGYM](https://github.com/dgym/cpython-emscripten)'s. He has more that are interesting and probably instructive.
