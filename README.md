@@ -51,6 +51,17 @@ While in your working-directory carefully follow the instructions at [Download E
 
 It does not really matter where you put it. I put it in my working-directory.
 
+**Important**: For each terminal session [you must activate](https://emscripten.org/docs/getting_started/downloads.html) Emscripten. Here are the commands again - they must be executed in the Emscripten directory -
+
+Make the "latest" SDK "active" for the current user. (writes ~/.emscripten file)
+```
+    ./emsdk activate latest
+```
+Activate PATH and other environment variables in the current terminal
+```
+    source ./emsdk_env.sh
+```
+
 ### Clone CPython source
 
 In the working-directory -
@@ -84,9 +95,9 @@ In the working-directory -
     $ cp config.site cpython
 ```
 
-The next command uses emscripten tools. They must be "activated", in your $PATH.  See above.
+The next command uses emscripten tools. They must be "activated" (in your PATH).  See above.
 
-Notice <install-path>. It should be an absolute path. I specified a new directory in my working directory. A directory name with "install" in it is probably a good idea.
+Notice <install-path>. It should be an absolute path. I specified a new directory in my working-directory. A directory name with "install" in it is probably a good idea.
     
 ```
     $ bash
@@ -94,7 +105,7 @@ Notice <install-path>. It should be an absolute path. I specified a new director
     $ exit
 ```
 
-Notice that configure output is redirected to files. See those if you want. So far I have ignored the warnings, errors. (Is that bad?)
+Notice that configure output is redirected to files. See those if you want. So far I have ignored the warnings, errors. (Is that bad?). Actually, I've noticed that there are no errors. Hmmm.
 
 Continuing -
 
